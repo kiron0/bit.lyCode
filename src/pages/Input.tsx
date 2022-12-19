@@ -3,6 +3,7 @@ import db from '../auth/Firebase/firebase.init'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { toast } from 'react-hot-toast';
 import Footer from '../shared/Footer';
+import ThemeChanger from '../shared/ThemeChanger/ThemeChanger';
 
 
 const tinyID = require('tiny-unique-id');
@@ -158,6 +159,7 @@ export default function Input() {
                               </div>
 
                               <Footer />
+                              <ThemeChanger />
                     </div>
           )
 }

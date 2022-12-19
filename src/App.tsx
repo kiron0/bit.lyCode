@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Input from './pages/Input';
 import Redirect from './pages/Redirect';
-import ThemeChanger from './shared/ThemeChanger/ThemeChanger';
 
 export const InitializeContext = createContext(null as any);
 
@@ -21,7 +20,6 @@ function App() {
           <Route path="/" element={<Input />} />
           <Route path="/:slug" element={<Redirect />} />
         </Routes>
-        <ThemeChanger />
         <Toaster />
       </div>
     </InitializeContext.Provider>
