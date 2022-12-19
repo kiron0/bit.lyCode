@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { createContext, useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Input from './pages/Input';
+import Redirect from './pages/Redirect';
+import ThemeChanger from './shared/ThemeChanger/ThemeChanger';
+
+export const InitializeContext = createContext(null as any);
 
 function App() {
+  const [theme, setTheme] = useState("emerald");
+
+  useEffect(() => {
+    setTheme(window.localStorage.getItem("theme") as any);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <InitializeContext.Provider value={{ theme, setTheme }}>
+      <div data-theme={theme ? theme : "emerald"} className="bg-base-100">
+        <Routes>
+          <Route path="/" element={<Input />} />
+          <Route path="/:slug" element={<Redirect />} />
+        </Routes>
+        <ThemeChanger />
+        <Toaster />
+      </div>
+    </InitializeContext.Provider>
   );
 }
 
