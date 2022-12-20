@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import db from '../auth/Firebase/firebase.init'
+import { nanoid } from 'nanoid';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { toast } from 'react-hot-toast';
 import Footer from '../shared/Footer';
 import ThemeChanger from '../shared/ThemeChanger/ThemeChanger';
-
-
-const tinyID = require('tiny-unique-id');
 
 export default function Input() {
           const [shorten, setShorten] = useState('');
@@ -57,7 +55,7 @@ export default function Input() {
                               let finalData = data.docs[0].data();
                               setShorten(`${window.location.origin}/${finalData.slug}`);
                               toast.success('URL Already Exist..!', {
-                                        icon: "✅",
+                                        icon: "⚠️",
                                         duration: 3000,
                               });
                               setLoading(false);
@@ -65,7 +63,7 @@ export default function Input() {
                     }
 
                     if (isValidURL.test(input)) {
-                              const slug = tinyID.unique();
+                              const slug = nanoid(6);
                               await db.collection('urls').add({
                                         url: input,
                                         slug: slug
@@ -79,14 +77,21 @@ export default function Input() {
                     }
           }
 
+          // re-render the component without reloading the page
+          const handleGenerateAgain = () => {
+                    setShorten('');
+                    const form = document.querySelector('form') as HTMLFormElement;
+                    form.reset();
+          }
+
           return (
                     <div className='bg-base-100 h-screen'>
                               <div className='flex flex-col justify-center items-center gap-3 pt-12'>
-                                        <h1 className='text-3xl'>Bit.ly Code Shortener</h1>
+                                        <h1 className='text-3xl'>Bit.ly URL Shortener</h1>
                                         <p>Shorten your URL</p>
                                         <div className='relative w-full md:w-1/2 max-w-xl md:shadow-md'>
                                                   <div className="md:card-body px-3">
-                                                            <form onSubmit={handleDB}>
+                                                            <form onSubmit={handleDB} className="form">
                                                                       <div className="name border rounded-none p-3 relative mt-10">
                                                                                 <div className="name-title absolute -top-4 bg-base-100 border rounded-none p-1">
                                                                                           <h3 className="text-xs font-poppins">Put your URL</h3>
@@ -111,9 +116,16 @@ export default function Input() {
                                                                                 )}
                                                                       </div>
                                                                       <div className="card-actions justify-center mt-5">
-                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-none flex gap-2 ${urlError ? 'btn-disabled' : ''}`} type="submit"><i className="bx bx-code-alt text-lg"></i> Submit</button>
+                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-none flex gap-2 ${urlError ? 'btn-disabled' : ''}`}><i className="bx bx-code-alt text-lg"></i> Submit</button>
                                                                       </div>
                                                             </form>
+                                                            {
+                                                                      shorten && (
+                                                                                <div className='flex justify-center mt-4 md:mt-2'>
+                                                                                          <button className='btn btn-sm md:btn-md btn-secondary text-white rounded-none flex gap-2' onClick={handleGenerateAgain}><i className="bx bx-expand-horizontal text-lg"></i> Shorten Another</button>
+                                                                                </div>
+                                                                      )
+                                                            }
                                                             {
                                                                       loading ? (
 
