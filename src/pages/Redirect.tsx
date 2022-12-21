@@ -19,7 +19,6 @@ export default function Redirect() {
         } else {
           let finalData = data.docs[0].data();
           window.location.href = finalData.url;
-          window.document.title = finalData.urlName;
         }
       })
     }
