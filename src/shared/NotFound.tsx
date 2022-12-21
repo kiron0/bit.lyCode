@@ -5,8 +5,8 @@ export default function NotFound() {
           return (
                     <main className="h-screen w-full flex flex-col justify-center items-center bg-[#fff]">
                               <h1 className="text-9xl font-extrabold tracking-widest">404</h1>
-                              <div className="bg-[#FF6A3D] px-2 text-sm rounded rotate-12 absolute">
-                                        Link is not valid
+                              <div className="bg-[#FF6A3D] text-white px-2 text-sm rounded rotate-12 absolute">
+                                        Sorry, Link is not valid
                               </div>
                               <button className="mt-5">
                                         <a href='/'

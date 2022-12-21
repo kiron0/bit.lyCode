@@ -6,53 +6,60 @@ import NotFound from '../shared/NotFound';
 
 export default function Redirect() {
   const { slug } = useParams();
-  const [finalURL, setFinalURL] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    let query = db.collection('urls').where('slug', '==', slug);
-    query.onSnapshot((data) => {
-      if (data === undefined) return <NotFound />;
-      let finalData = data.docs[0].data();
-      setFinalURL(finalData.slug);
-      window.location.href = finalData.url;
-    })
-  }, [slug, finalURL, setFinalURL])
+    const fetchLinkDoc = () => {
+      if (!slug) return;
+      if (slug.length !== 6) return setLoading(false);
+      let query = db.collection('urls').where('slug', '==', slug);
+      query.onSnapshot((data) => {
+        if (data === undefined) {
+          return setLoading(false);
+        } else {
+          let finalData = data.docs[0].data();
+          window.location.href = finalData.url;
+          window.document.title = finalData.urlName;
+        }
+      })
+    }
 
-  return (
-    <>
-      {
-        slug === finalURL ? (
-          <div className={styles.preloader}>
-            <div className={styles.container}>
-              <div className={styles.wrapper}>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-                <div className={styles.loader}>
-                  <div className={styles.dot}></div>
-                </div>
-              </div>
-              <div className={styles.text}>
-                Redirecting
-              </div>
+    fetchLinkDoc();
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className={styles.preloader}>
+        <div className={styles.container}>
+          <div className={styles.wrapper}>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
+            </div>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
+            </div>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
+            </div>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
+            </div>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
+            </div>
+            <div className={styles.loader}>
+              <div className={styles.dot}></div>
             </div>
           </div>
-        ) : (
-          <NotFound />
-        )
-      }
-    </>
-  )
+          <div className={styles.text}>
+            Redirecting
+          </div>
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <NotFound />
+    )
+  }
 }
