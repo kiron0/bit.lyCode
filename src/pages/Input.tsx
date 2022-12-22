@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import db from '../auth/Firebase/firebase.init'
 import { nanoid } from 'nanoid';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -12,10 +12,6 @@ export default function Input() {
           const [urlName, setUrlName] = useState('');
           const [urlNameError, setUrlNameError] = useState('');
           const [loading, setLoading] = useState(false);
-
-          useEffect(() => {
-                    document.title = urlName ? `${urlName}` : 'Bit.ly URL Shortener';
-          }, [urlName]);
 
           const isValidURL = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i;
 
@@ -88,6 +84,13 @@ export default function Input() {
                                         icon: "⚠️",
                                         duration: 3000,
                               });
+                              // if urlName is already exist then update urlName
+                              if (finalData.urlName !== inputName) {
+                                        await db.collection('urls').doc(data.docs[0].id).update({
+                                                  urlName: inputName,
+                                        })
+                              }
+                              setUrlName(inputName);
                               setLoading(false);
                               return;
                     }
@@ -115,6 +118,10 @@ export default function Input() {
                     const form = document.querySelector('form') as HTMLFormElement;
                     form.reset();
           }
+
+          useEffect(() => {
+                    document.title = urlName ? `${urlName}` : 'Bit.ly URL Shortener';
+          }, [urlName]);
 
           return (
                     <div className='bg-base-100 h-screen'>

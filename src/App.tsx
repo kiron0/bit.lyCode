@@ -12,7 +12,7 @@ function App() {
 
   useEffect(() => {
     setTheme(window.localStorage.getItem("theme") as any);
-  }, []);
+  }, [theme]);
 
   return (
     <InitializeContext.Provider value={{ theme, setTheme }}>
@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Input />} />
           <Route path="/:slug" element={<Redirect />} />
-          <Route path="/*" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
       </div>

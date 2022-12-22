@@ -17,14 +17,16 @@ export default function Redirect() {
         if (data === undefined) {
           return setLoading(false);
         } else {
-          let finalData = data.docs[0].data();
+          let finalData = data?.docs[0]?.data();
+          if (finalData === undefined) return setLoading(false);
+          document.title = finalData?.urlName ? finalData?.urlName : "Bit.ly URL Shortener";
           window.location.href = finalData.url;
         }
       })
     }
 
     fetchLinkDoc();
-  }, [slug])
+  }, [slug, setLoading, loading])
 
   if (loading) {
     return (
