@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import db from '../auth/Firebase/firebase.init'
 import { nanoid } from 'nanoid';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -9,7 +9,13 @@ import ThemeChanger from '../shared/ThemeChanger/ThemeChanger';
 export default function Input() {
           const [shorten, setShorten] = useState('');
           const [urlError, setUrlError] = useState('');
+          const [urlName, setUrlName] = useState('');
+          const [urlNameError, setUrlNameError] = useState('');
           const [loading, setLoading] = useState(false);
+
+          useEffect(() => {
+                    document.title = urlName ? `${urlName}` : 'Bit.ly URL Shortener';
+          }, [urlName]);
 
           const isValidURL = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i;
 
@@ -27,20 +33,44 @@ export default function Input() {
                     }
           }
 
+          const handleURLNameError = (e: React.ChangeEvent<HTMLInputElement>) => {
+                    const input = e.target.value;
+                    // check if input is empty
+                    if (input === '') {
+                              setUrlNameError('Please Enter URL Name..!');
+                    } else if (input.length < 6) {
+                              setUrlNameError('URL Name must be 6 characters long..!');
+                    } else {
+                              setUrlNameError('');
+                    }
+          }
+
           const handleDB = async (e: React.SyntheticEvent) => {
                     e.preventDefault();
                     setLoading(true);
 
                     const form = e.target as typeof e.target & {
                               URL: { value: string };
+                              URLName: { value: string };
                     };
 
                     // if user enter url without https:// or http:// then add https:// to url
                     const input = form.URL.value;
+                    const inputName = form.URLName.value;
 
                     // check if input is empty
                     if (input === '') {
                               toast.error('Please Enter URL..!', {
+                                        icon: "❌",
+                                        duration: 3000,
+                              });
+                              setLoading(false);
+                              return;
+                    }
+
+                    // check if input is empty
+                    if (inputName === '') {
+                              toast.error('Please Enter URL Name..!', {
                                         icon: "❌",
                                         duration: 3000,
                               });
@@ -67,8 +97,10 @@ export default function Input() {
                               await db.collection('urls').add({
                                         url: input,
                                         slug: slug,
+                                        urlName: inputName,
                               })
                               setShorten(`${window.location.origin}/${slug}`);
+                              setUrlName(inputName);
                               toast.success('URL Shortened Successfully..!', {
                                         icon: "✅",
                                         duration: 3000,
@@ -115,8 +147,31 @@ export default function Input() {
                                                                                           </small>
                                                                                 )}
                                                                       </div>
+                                                                      <div className="name border rounded-none p-3 relative mt-10">
+                                                                                <div className="name-title absolute -top-4 bg-base-100 border rounded-none p-1">
+                                                                                          <h3 className="text-xs font-poppins">Put your URL Name</h3>
+                                                                                </div>
+                                                                                <div className={`input-group flex items-center my-2 border p-3 rounded-none mt-2 ${urlNameError && "border-error shadow-error outline-error"}`}>
+                                                                                          <div className="icon">
+                                                                                                    <i className="bx bxs-pen"></i>
+                                                                                          </div>
+                                                                                          <input
+                                                                                                    type="text"
+                                                                                                    name="URLName"
+                                                                                                    onChange={handleURLNameError}
+                                                                                                    className="form-control outline-none pl-4 w-full bg-transparent"
+                                                                                                    placeholder="Example"
+                                                                                                    autoComplete="off"
+                                                                                          />
+                                                                                </div>
+                                                                                {urlNameError && (
+                                                                                          <small className="flex flex-col pt-2 text-error">
+                                                                                                    {urlNameError}
+                                                                                          </small>
+                                                                                )}
+                                                                      </div>
                                                                       <div className="card-actions justify-center mt-5">
-                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-none flex gap-2 ${urlError ? 'btn-disabled' : ''}`}><i className="bx bx-code-alt text-lg"></i> Submit</button>
+                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-none flex gap-2 ${urlError || urlNameError ? 'btn-disabled' : ''}`}><i className="bx bx-code-alt text-lg"></i> Submit</button>
                                                                       </div>
                                                             </form>
                                                             {
