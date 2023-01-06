@@ -19,7 +19,7 @@ export default function Redirect() {
         } else {
           let finalData = data?.docs[0]?.data();
           if (finalData === undefined) return setLoading(false);
-          document.title = finalData?.urlName ? finalData?.urlName : "Bit.ly URL Shortener";
+          // document.title = finalData?.urlName ? finalData?.urlName : "Bit.ly URL Shortener";
           window.location.href = finalData.url;
         }
       })

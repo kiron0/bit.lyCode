@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import db from '../auth/Firebase/firebase.init'
 import { nanoid } from 'nanoid';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { toast } from 'react-hot-toast';
 import Footer from '../shared/Footer';
-import ThemeChanger from '../shared/ThemeChanger/ThemeChanger';
+import URL from '../assets/url.png';
+import SUBMIT from '../assets/submit.png';
 
 export default function Input() {
           const [shorten, setShorten] = useState('');
           const [urlError, setUrlError] = useState('');
-          const [urlName, setUrlName] = useState('');
-          const [urlNameError, setUrlNameError] = useState('');
           const [loading, setLoading] = useState(false);
 
-          const isValidURL = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(\:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(\#[-a-z\d_]*)?$/i;
+          const isValidURL = /^(https?:\/\/)?((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|((\d{1,3}\.){3}\d{1,3}))(:\d+)?(\/[-a-z\d%_.~+]*)*(\?[;&a-z\d%_.~+=-]*)?(#[-a-z\d_]*)?$/i;
 
           const handleURLError = (e: React.ChangeEvent<HTMLInputElement>) => {
                     const input = e.target.value;
@@ -29,44 +28,21 @@ export default function Input() {
                     }
           }
 
-          const handleURLNameError = (e: React.ChangeEvent<HTMLInputElement>) => {
-                    const input = e.target.value;
-                    // check if input is empty
-                    if (input === '') {
-                              setUrlNameError('Please Enter URL Name..!');
-                    } else if (input.length < 6) {
-                              setUrlNameError('URL Name must be 6 characters long..!');
-                    } else {
-                              setUrlNameError('');
-                    }
-          }
-
           const handleDB = async (e: React.SyntheticEvent) => {
                     e.preventDefault();
                     setLoading(true);
 
                     const form = e.target as typeof e.target & {
                               URL: { value: string };
-                              URLName: { value: string };
                     };
 
                     // if user enter url without https:// or http:// then add https:// to url
                     const input = form.URL.value;
-                    const inputName = form.URLName.value;
+                    // const inputName = form.URLName.value;
 
                     // check if input is empty
                     if (input === '') {
                               toast.error('Please Enter URL..!', {
-                                        icon: "❌",
-                                        duration: 3000,
-                              });
-                              setLoading(false);
-                              return;
-                    }
-
-                    // check if input is empty
-                    if (inputName === '') {
-                              toast.error('Please Enter URL Name..!', {
                                         icon: "❌",
                                         duration: 3000,
                               });
@@ -84,13 +60,6 @@ export default function Input() {
                                         icon: "⚠️",
                                         duration: 3000,
                               });
-                              // if urlName is already exist then update urlName
-                              if (finalData.urlName !== inputName) {
-                                        await db.collection('urls').doc(data.docs[0].id).update({
-                                                  urlName: inputName,
-                                        })
-                              }
-                              setUrlName(inputName);
                               setLoading(false);
                               return;
                     }
@@ -100,10 +69,8 @@ export default function Input() {
                               await db.collection('urls').add({
                                         url: input,
                                         slug: slug,
-                                        urlName: inputName,
                               })
                               setShorten(`${window.location.origin}/${slug}`);
-                              setUrlName(inputName);
                               toast.success('URL Shortened Successfully..!', {
                                         icon: "✅",
                                         duration: 3000,
@@ -119,32 +86,28 @@ export default function Input() {
                     form.reset();
           }
 
-          useEffect(() => {
-                    document.title = urlName ? `${urlName}` : 'Bit.ly URL Shortener';
-          }, [urlName]);
-
           return (
-                    <div className='bg-base-100 h-screen'>
+                    <div className='h-screen'>
                               <div className='flex flex-col justify-center items-center gap-3 pt-12'>
                                         <h1 className='text-3xl'>Bit.ly URL Shortener</h1>
                                         <p>Shorten your URL</p>
-                                        <div className='relative w-full md:w-1/2 max-w-xl md:shadow-md'>
+                                        <div className='relative w-full md:w-1/2 max-w-xl md:shadow-md lg:shadow-lg rounded-xl'>
                                                   <div className="md:card-body px-3">
                                                             <form onSubmit={handleDB} className="form">
-                                                                      <div className="name border rounded-none p-3 relative mt-10">
-                                                                                <div className="name-title absolute -top-4 bg-base-100 border rounded-none p-1">
-                                                                                          <h3 className="text-xs font-poppins">Put your URL</h3>
+                                                                      <div className="name border rounded-md p-3 relative mt-10">
+                                                                                <div className="name-title absolute -top-4 bg-base-100 font-semibold border rounded-md p-1">
+                                                                                          <h3 className="text-xs font-poppins select-none">Put your URL</h3>
                                                                                 </div>
-                                                                                <div className={`input-group flex items-center my-2 border p-3 rounded-none mt-2 ${urlError && "border-error shadow-error outline-error"}`}>
+                                                                                <div className={`input-group flex items-center my-2 border p-3 rounded-md mt-2 ${urlError && "border-error shadow-error outline-error"}`}>
                                                                                           <div className="icon">
-                                                                                                    <i className="bx bxs-pen"></i>
+                                                                                                    <img src={URL} alt="" className='w-4' />
                                                                                           </div>
                                                                                           <input
                                                                                                     type="url"
                                                                                                     name="URL"
                                                                                                     onChange={handleURLError}
                                                                                                     className="form-control outline-none pl-4 w-full bg-transparent"
-                                                                                                    placeholder="https://www.example.com"
+                                                                                                    placeholder="Your URL here..!"
                                                                                                     autoComplete="off"
                                                                                           />
                                                                                 </div>
@@ -154,37 +117,14 @@ export default function Input() {
                                                                                           </small>
                                                                                 )}
                                                                       </div>
-                                                                      <div className="name border rounded-none p-3 relative mt-10">
-                                                                                <div className="name-title absolute -top-4 bg-base-100 border rounded-none p-1">
-                                                                                          <h3 className="text-xs font-poppins">Put your URL Name</h3>
-                                                                                </div>
-                                                                                <div className={`input-group flex items-center my-2 border p-3 rounded-none mt-2 ${urlNameError && "border-error shadow-error outline-error"}`}>
-                                                                                          <div className="icon">
-                                                                                                    <i className="bx bxs-pen"></i>
-                                                                                          </div>
-                                                                                          <input
-                                                                                                    type="text"
-                                                                                                    name="URLName"
-                                                                                                    onChange={handleURLNameError}
-                                                                                                    className="form-control outline-none pl-4 w-full bg-transparent"
-                                                                                                    placeholder="Example"
-                                                                                                    autoComplete="off"
-                                                                                          />
-                                                                                </div>
-                                                                                {urlNameError && (
-                                                                                          <small className="flex flex-col pt-2 text-error">
-                                                                                                    {urlNameError}
-                                                                                          </small>
-                                                                                )}
-                                                                      </div>
                                                                       <div className="card-actions justify-center mt-5">
-                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-none flex gap-2 ${urlError || urlNameError ? 'btn-disabled' : ''}`}><i className="bx bx-code-alt text-lg"></i> Submit</button>
+                                                                                <button className={`btn btn-sm md:btn-md btn-primary text-white rounded-md flex items-center gap-2 ${urlError ? 'btn-disabled cursor-not-allowed' : ''}`}><img src={SUBMIT} alt="" className='w-4' /> Submit</button>
                                                                       </div>
                                                             </form>
                                                             {
                                                                       shorten && (
                                                                                 <div className='flex justify-center mt-4 md:mt-2'>
-                                                                                          <button className='btn btn-sm md:btn-md btn-secondary text-white rounded-none flex gap-2' onClick={handleGenerateAgain}><i className="bx bx-expand-horizontal text-lg"></i> Shorten Another</button>
+                                                                                          <button className='btn btn-sm md:btn-md btn-primary text-white rounded-md flex gap-2' onClick={handleGenerateAgain}><i className="bx bx-revision text-lg"></i> Short Again</button>
                                                                                 </div>
                                                                       )
                                                             }
@@ -206,7 +146,7 @@ export default function Input() {
                                                                                           {
                                                                                                     shorten && (
                                                                                                               <div className='flex flex-col justify-center items-center gap-2 mt-6'>
-                                                                                                                        <h1>Your Shorten URL is: </h1>
+                                                                                                                        <h1 className='flex items-center gap-2 pb-2 select-none'>Your Shortened URL is <i className='bx bxs-hand-down text-lg'></i> </h1>
                                                                                                                         <CopyToClipboard text={shorten} onCopy={
                                                                                                                                   () => {
                                                                                                                                             if (shorten !== '') {
@@ -218,10 +158,12 @@ export default function Input() {
                                                                                                                                   }
                                                                                                                         }>
                                                                                                                                   <span className='md:tooltip md:tooltip-right' data-tip="👍 Click to copy..!">
-                                                                                                                                            <kbd className="kbd kbd-xs sm:kbd-sm md:kbd-md lg:kbd-lg select-none rounded-none cursor-pointer p-4 md:p-0">{shorten}</kbd>
+                                                                                                                                            <kbd className="kbd kbd-sm md:kbd-md lg:kbd-lg select-none rounded-md text-white border-white cursor-pointer p-4 md:p-0 bg-transparent">{shorten}</kbd>
                                                                                                                                   </span>
                                                                                                                         </CopyToClipboard>
-                                                                                                                        <a href={shorten} className="btn btn-xs rounded-none mt-1" target="_blank" rel="noopener noreferrer">Preview</a>
+                                                                                                                        <span className='md:tooltip md:tooltip-left' data-tip="👍 Click to preview..!">
+                                                                                                                                  <a href={shorten} className="btn btn-xs rounded-md mt-1 text-white" target="_blank" rel="noopener noreferrer">Preview</a>
+                                                                                                                        </span>
                                                                                                               </div>
                                                                                                     )
                                                                                           }
@@ -233,7 +175,6 @@ export default function Input() {
                               </div>
 
                               <Footer />
-                              <ThemeChanger />
                     </div>
           )
 }
