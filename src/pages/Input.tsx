@@ -125,7 +125,7 @@ export default function Input() {
                                                             {
                                                                       shorten && (
                                                                                 <div className='flex justify-center mt-4 md:mt-2'>
-                                                                                          <button className='btn btn-sm md:btn-md btn-primary text-white rounded-md flex gap-2' onClick={handleGenerateAgain}><i className="bx bx-revision text-lg"></i> Short Another</button>
+                                                                                          <button className='btn btn-sm md:btn-md btn-primary text-white rounded-md flex gap-2' onClick={handleGenerateAgain}><i className="bx bx-revision text-lg"></i> Shorten Another</button>
                                                                                 </div>
                                                                       )
                                                             }
