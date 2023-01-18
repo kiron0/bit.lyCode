@@ -19,7 +19,6 @@ export default function Redirect() {
         } else {
           let finalData = data?.docs[0]?.data();
           if (finalData === undefined) return setLoading(false);
-          // document.title = finalData?.urlName ? finalData?.urlName : "Bit.ly URL Shortener";
           window.location.href = finalData.url;
         }
       })
@@ -31,31 +30,26 @@ export default function Redirect() {
   if (loading) {
     return (
       <div className={styles.preloader}>
-        <div className={styles.container}>
-          <div className={styles.wrapper}>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-            <div className={styles.loader}>
-              <div className={styles.dot}></div>
-            </div>
-          </div>
-          <div className={styles.text}>
-            Redirecting
+        <div className={styles.body}>
+          <span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <div className={styles.base}>
+            <span></span>
+            <div className={styles.face}></div>
           </div>
         </div>
+        <div className={styles.longfazers}>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <h1>Redirecting</h1>
+
       </div>
     )
   } else {
